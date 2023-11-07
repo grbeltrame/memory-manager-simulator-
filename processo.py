@@ -16,13 +16,12 @@ class Processo:
     def mostra_processo(self):
       print('\n SITUAÇÃO DO PROCESSO')
       print('--------------------------')
+      print(f'Tamanho do processo: {self.imagem.tamanho}')
       print(f'{self.imagem.mostra_imagem()}')
       print('PAGINAS DO PROCESSO')
       for i in self.paginas:
-          print(f"{i}\n")
+          if i == None:
+              print('Nenhuma pagina alocada')
+          else:
+              print(f"{i}\n")
           
-teste_imagem = Imagem(1,0,0, "novo")
-processo_teste = Processo(teste_imagem)
-processo_teste.adiciona_pagina(1)
-processo_teste.adiciona_pagina(2)
-processo_teste.mostra_processo()
