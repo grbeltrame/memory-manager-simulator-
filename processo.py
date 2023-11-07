@@ -1,3 +1,6 @@
+from imagem import Imagem  # Substitua 'imagem' pelo nome real do arquivo
+
+
 class Processo:
 
     def __init__(self, imagem):
@@ -13,11 +16,11 @@ class Processo:
     def mostra_processo(self):
       print('\n SITUAÇÃO DO PROCESSO')
       print('--------------------------')
-      # print(f'{self.imagem.mostra_imagem()}')
+      print(f'{self.imagem.mostra_imagem()}')
       print('PAGINAS DO PROCESSO')
-      # for(i in self.paginas):
-      #   print(f"Página: {i}")
-
+      for i in self.paginas:
+          print(f"{i}\n")
+          
 teste_imagem = Imagem(1,0,0, "novo")
 processo_teste = Processo(teste_imagem)
 processo_teste.adiciona_pagina(1)
