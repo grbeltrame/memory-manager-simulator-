@@ -1,11 +1,12 @@
 from imagem import Imagem  # Substitua 'imagem' pelo nome real do arquivo
-
+from tabela_paginas import TabelaPagina
 
 class Processo:
 
+
     def __init__(self, imagem):
         self.imagem = imagem
-        self.paginas = []
+        self.paginas = TabelaPagina()
 
 
 # Função para adicionar referência da pagina no processo.
@@ -18,10 +19,4 @@ class Processo:
       print('--------------------------')
       print(f'Tamanho do processo: {self.imagem.tamanho}')
       print(f'{self.imagem.mostra_imagem()}')
-      print('PAGINAS DO PROCESSO')
-      for i in self.paginas:
-          if i == None:
-              print('Nenhuma pagina alocada')
-          else:
-              print(f"{i}\n")
-          
+      print(f'Quantidade de Páginas na TP: {len(self.paginas.entradas)} ')
