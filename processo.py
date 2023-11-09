@@ -9,10 +9,11 @@ class Processo:
         self.paginas = TabelaPagina()
 
 
+
 # Função para adicionar referência da pagina no processo.
 # Pode ser uma pagina ou varias dependendo do tamanho do processo
-    def adiciona_pagina(self, pagina):
-        self.paginas.append(pagina)
+    def adiciona_pagina_TP(self, numpagina):           # Adiciona uma entrada de página na TP
+        self.paginas.adiciona_entrada(numpagina)
 
     def mostra_processo(self):
       print('\n SITUAÇÃO DO PROCESSO')
