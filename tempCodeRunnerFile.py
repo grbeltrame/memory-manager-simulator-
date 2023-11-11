@@ -24,29 +24,11 @@ with open('entrada.txt', 'r') as arquivo:
 
             reg = Registro(partes[0], partes[1], partes[2])
             processo.imagem.adiciona_registro(reg)
-        
-        elif len(partes) == 2:
-            nome = partes[0]
-
-            if nome not in processos:
-                img = Imagem(id, 0, 0, 'NOVO')
-                processo = Processo(img)
-                processos[nome] = processo
-                id += 1
-            else:
-                processo = processos[nome]
-
-            reg = Registro(partes[0], partes[1])
-            processo.imagem.adiciona_registro(reg)  
-
-
 
 
 # main.py
 for nome, processo in processos.items():
     print(f'\nSITUAÇÃO DO PROCESSO {nome}:\n--------------------------\nTamanho do processo: {processo.imagem.tamanho}\nId do processo: {processo.imagem.id_processo}\nNumero do processo: {processo.imagem.nome}\nProgram counter: {processo.imagem.PC}\nInstruction registrer: {processo.imagem.IR}\nEstado do processo: {processo.imagem.estado}\nQuantidade de Páginas na TP: {len(processo.paginas.entradas)} ')
-    processo.imagem.mostra_executavel()
-
 
 
 
