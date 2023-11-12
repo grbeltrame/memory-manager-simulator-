@@ -2,46 +2,40 @@ from tabela_paginas import TabelaPagina
 from processo import Processo
 from imagem import Imagem
 
-class Principal:
+from collections import deque
 
-    def __init__(self, tamanho):
+class Principal:
+    def __init__(self, tamanho, tamanho_pagina):
         self.tamanho = tamanho
+        self.tamanho_pagina = tamanho_pagina
         self.memoria = []
-        self.qtdtabelas = 0     # Qtd de tabelas de páginas na MP (1 para cada processo)
 
     def adiciona_processo(self, processo):
-        
-        alocado = 0                         # Espaço Alocado em memória
-
-        for i in range(len(self.memoria)):
-            alocado += self.memoria[i].imagem.tamanho          # self.memoria[i] é um Processo.
-        
-        if alocado + processo.imagem.tamanho + (self.qtdtabelas+1)*256 >= self.tamanho:             # Memória cheia
-            print('Memória Insuficiente -- Memória Principal cheia')
-        else:
+        qtd_quadros_necessarios = (processo.imagem.tamanho + self.tamanho_pagina - 1) // self.tamanho_pagina
+        if len(self.memoria) + qtd_quadros_necessarios <= self.tamanho // self.tamanho_pagina:
+            processo.tabela_paginas.inicializa_tabela(qtd_quadros_necessarios)
             self.memoria.append(processo)
-            self.qtdtabelas += 1
-            print('Processo adicionado à Memória Principal')       # Memória tem espaço: Processo é adicionado à memória
-
-
-
-
+            print('Processo adicionado à Memória Principal')
+        else:
+            print('Memória Insuficiente -- Memória Principal cheia')
 
     def mostra_memoria_principal(self):
-      # Só para Interface ou Debug
-      print('\n SITUAÇÃO DA MEMÓRIA PRINCIPAL')
-      print('--------------------------')
-      print(f'Tamanho da MP: {self.tamanho}')
-      print(f'Memória Alocada: {len(self.memoria) + self.qtdtabelas*256}')
+        print('\n SITUAÇÃO DA MEMÓRIA PRINCIPAL')
+        print('--------------------------')
+        print(f'Tamanho da MP: {self.tamanho}')
+        print(f'Memória Alocada: {len(self.memoria) * self.tamanho_pagina} ({len(self.memoria)} páginas)')
 
-# Teste: Criando um processo e adicionando na MP, printando tamanho do processo e quantidade de TP's
+    def liberar_quadros(self, processo):
+        # Remove os quadros alocados para o processo especificado
+        self.memoria = [quadro for quadro in self.memoria if quadro != processo]
 
-pin = Principal(100)
-img = Imagem(1, 0, 20, "Bloqueado")
-img.tamanho = 200
-proc = Processo(img)
-pin.adiciona_processo(proc)
-print(pin.memoria[0].imagem.tamanho)
-print(pin.qtdtabelas)
+    def mostra_memoria_principal(self):
+        print('\nSITUAÇÃO DA MEMÓRIA PRINCIPAL')
+        print('--------------------------')
+        print(f'Tamanho da MP: {self.tamanho}')
+        print(f'Tamanho da Página: {self.tamanho_pagina}')
+        print(f'Memória Alocada: {len(self.memoria)} quadros ({len(self.memoria) * self.tamanho_pagina} bytes)')
+        print(f'Quantidade de Tabelas na MP: {self.qtdtabelas}')
+
     
     

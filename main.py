@@ -40,9 +40,6 @@ with open('entrada.txt', 'r') as arquivo:
             processo.imagem.adiciona_registro(reg)  
 
 
-
-
-# main.py
 for nome, processo in processos.items():
     print(f'\nSITUAÇÃO DO PROCESSO {nome}:\n--------------------------\nTamanho do processo: {processo.imagem.tamanho}\nId do processo: {processo.imagem.id_processo}\nNumero do processo: {processo.imagem.nome}\nProgram counter: {processo.imagem.PC}\nInstruction registrer: {processo.imagem.IR}\nEstado do processo: {processo.imagem.estado}\nQuantidade de Páginas na TP: {len(processo.paginas.entradas)} ')
     processo.imagem.mostra_executavel()

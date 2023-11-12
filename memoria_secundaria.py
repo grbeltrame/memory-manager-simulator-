@@ -32,16 +32,16 @@ class Secundaria:
 # Teoricamente, não se adiciona página se ele tá na MS, mas isso mostra que a TP tá funcionando e a arquitetura da MS é igual a da MP
 
 
-sec = Secundaria(1000000)
-img = Imagem(1, 0, 20, "Bloqueado")
-img.tamanho = 200
-proc = Processo(img)
-sec.adiciona_processo(proc)
-print(sec.memoria[0].imagem.tamanho)
-sec.memoria[0].adiciona_pagina_TP(20)
-sec.memoria[0].adiciona_pagina_TP(30)
-sec.memoria[0].adiciona_pagina_TP(45)
-sec.memoria[0].adiciona_pagina_TP(20)
-print(sec.memoria[0].paginas.mostra_tabela_paginas())
+# sec = Secundaria(1000000)
+# img = Imagem(1, 0, 20, "Bloqueado")
+# img.tamanho = 256
+# proc = Processo(img, img.tamanho)
+# sec.adiciona_processo(proc)
+# print(sec.memoria[0].imagem.tamanho)
+# sec.memoria[0].adiciona_pagina_TP(20)
+# sec.memoria[0].adiciona_pagina_TP(30)
+# sec.memoria[0].adiciona_pagina_TP(45)
+# sec.memoria[0].adiciona_pagina_TP(20)
+# print(sec.memoria[0].paginas.mostra_tabela_paginas())
 
     
