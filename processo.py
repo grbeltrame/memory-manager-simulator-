@@ -1,21 +1,14 @@
-from imagem import Imagem  # Substitua 'imagem' pelo nome real do arquivo
-from tabela_paginas import TabelaPagina
+# processo.py
 
-# No arquivo processo.py
-
-from tabela_paginas import TabelaPagina
+from tp import TabelaPagina
 
 class Processo:
-    def __init__(self, imagem, tamanho_pagina, principal, secundaria):
+    def __init__(self, imagem, tamanho, principal, secundaria):
         self.imagem = imagem
-        self.paginas = TabelaPagina(tamanho_pagina, principal, secundaria)
+        self.tamanho = tamanho
+        self.estado = "Novo"  # Estado inicialself.tabela_paginas = TabelaPagina(self, principal, secundaria, qtd_paginas_necessarias)
 
-    def adiciona_pagina_TP(self, numpagina):
-        self.paginas.adiciona_entrada(numpagina)
+    def atualiza_estado(self, novo_estado):
+        print(f"Processo {self.imagem.id_processo} está transitando do estado {self.estado} para {novo_estado}.")
+        self.estado = novo_estado
 
-    def mostra_processo(self):
-        print('\n SITUAÇÃO DO PROCESSO')
-        print('--------------------------')
-        print(f'Tamanho do processo: {self.imagem.tamanho}')
-        print(f'{self.imagem.mostra_imagem()}')
-        print(f'Quantidade de Páginas na TP: {len(self.paginas.entradas)} ')

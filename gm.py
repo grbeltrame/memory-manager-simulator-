@@ -1,34 +1,82 @@
-from memoria_principal import Principal
-from memoria_secundaria import Secundaria
+# gerenciador_memoria.py
+
+from mp import MemoriaPrincipal
+from ms import MemoriaSecundaria
 from processo import Processo
 from imagem import Imagem
 from swapper import Swapper
-# Código principal
-
 
 class GerenciadorMemoria:
     def __init__(self, tamanho_mp, tamanho_ms, tamanho_pagina, tamanho_endereco):
         self.tamanho_mp = tamanho_mp
         self.tamanho_ms = tamanho_ms
         self.tamanho_pagina = tamanho_pagina
+        self.fila_prontos_suspenso = []
+        self.fila_executando = []
+        self.fila_bloqueados_suspenso = []
+        self.fila_terminados = []
         self.tamanho_endereco = tamanho_endereco
-        self.principal = Principal(tamanho_mp, tamanho_pagina)  # Passa o tamanho da página
-        self.secundaria = Secundaria(tamanho_ms)
+        self.principal = MemoriaPrincipal(tamanho_mp, tamanho_pagina)
+        self.secundaria = MemoriaSecundaria(tamanho_ms)
+
+    def mostra_situacao_memoria(self):
+        print('\nSITUAÇÃO DA MEMÓRIA PRINCIPAL')
+        print('-----------------------------')
+        print(f'Tamanho da MP: {self.principal.tamanho}')
+        print(f'Espaço Alocado: {len(self.principal.memoria)} quadros')
+
+        for processo in self.principal.memoria:
+            if processo:
+                print(f'\nTabela de Páginas do Processo {processo.imagem.id_processo}:')
+                print('-----------------------------')
+                print('Índice | Página | Quadro')
+                
+                # Itera sobre as entradas da tabela de páginas
+                for entrada in processo.tabela_paginas.entradas:
+                    print(f'  {entrada.indice}\t|\t{entrada.pagina}\t|\t{entrada.quadro}')
+
+                print(f'\nConteúdo dos Quadros do Processo {processo.imagem.id_processo}:')
+                print('-----------------------------')
+                for i, quadro in enumerate(processo.tabela_paginas.entradas):
+                    if quadro:
+                        print(f'Quadro {i} - Conteúdo: {quadro.conteudo}')
+                    else:
+                        print(f'Quadro {i} - Vazio')
+
+
 
     def executa_comandos(self, arquivo):
         with open(arquivo, 'r') as f:
             for linha in f:
                 partes = linha.split()
+
+                # Verificar se há informações suficientes na linha
+                if len(partes) < 2:
+                    print("Formato de comando inválido na linha:", linha)
+                    continue  # Pular para a próxima iteração do loop
+
                 numero_processo = partes[0]
 
                 if partes[1] == 'C':
-                    tamanho_processo = int(partes[2].rstrip('MB'))
-                    self.cria_processo(numero_processo, tamanho_processo)
+                    # Verifica se há informações suficientes para processos de criação (com 4 partes)
+                    if len(partes) < 4:
+                        print("Formato de comando inválido na linha:", linha)
+                        continue  # Pular para a próxima iteração do loop
+
+                    tamanho_processo_str = partes[2]
+                    # Remove o 'MB' do final da string
+                    tamanho_processo_str = tamanho_processo_str.rstrip('MB')
+                    self.cria_processo(numero_processo, tamanho_processo_str)
                 elif partes[1] == 'T':
                     self.termina_processo(numero_processo)
                 elif partes[1] == 'P':
-                    endereco_logico = int(partes[2].lstrip('(').rstrip(')2'))
-                    self.executa_instrucao(numero_processo, endereco_logico)
+                    endereco_binario = partes[2].lstrip('(').rstrip(')2')               
+                    # Verifica se o endereço_binario não está vazio
+                    if endereco_binario:
+                        endereco_logico = int(endereco_binario, 2)
+                        self.executa_instrucao(numero_processo, endereco_logico)
+                    else:
+                        print(f"Formato de comando inválido na linha: {linha}")
                 elif partes[1] == 'I':
                     dispositivo = partes[2]
                     self.executa_io(numero_processo, dispositivo)
@@ -36,55 +84,109 @@ class GerenciadorMemoria:
                     endereco_logico = int(partes[2])
                     self.realiza_leitura(numero_processo, endereco_logico)
                 elif partes[1] == 'W':
+                    # Verifica se há informações suficientes para comandos de escrita (com 4 partes)
+                    if len(partes) < 4:
+                        print("Formato de comando inválido na linha:", linha)
+                        continue  # Pular para a próxima iteração do loop
+
                     endereco_logico = int(partes[2])
                     valor = int(partes[3])
                     self.realiza_escrita(numero_processo, endereco_logico, valor)
 
-    def cria_processo(self, numero_processo, tamanho_processo, principal, secundaria):
+            # Mostra a situação da memória após a execução dos comandos
+            self.mostra_situacao_memoria()
+
+    def cria_processo(self, numero_processo, tamanho_processo_str):
+        self.mostra_situacao_memoria()
+
+        # Converte o valor do tamanho do processo para inteiro
+        tamanho_processo = int(tamanho_processo_str)
+
         imagem = Imagem(numero_processo, 0, 0, 'NOVO')
         imagem.tamanho = tamanho_processo
-        processo = Processo(imagem, imagem.tamanho ,principal, secundaria)
-        self.principal.adiciona_processo(processo)
+        processo = Processo(imagem, tamanho_processo, self.principal, self.secundaria)  # Ajuste nesta linha
 
+        # Adiciona o processo à Memória Secundária
+        self.secundaria.adiciona_processo(processo)
+        processo.atualiza_estado("Pronto/Suspenso")
+        # Adiciona o processo à fila de processos prontos/suspenso
+        self.fila_prontos_suspenso.append(processo)
 
-        # Verifica se a memória principal está cheia
-        if len(self.principal.memoria) + self.principal.qtdtabelas * 256 >= self.principal.tamanho:
+        # Verifica se há espaço disponível na memória principal antes de adicionar o processo
+        if self.principal.tem_espaco_suficiente(processo):
+            self.principal.adiciona_processo(processo, self.secundaria)
+            processo.atualiza_estado("Pronto")
+            print(f"Processo {numero_processo} criado com sucesso.")
+        else:
+            print(f"Memória Insuficiente -- Memória Principal cheia para o processo {numero_processo}.")
+
+            # Exibe o estado da memória principal após a tentativa de criação do processo
+            self.mostra_situacao_memoria()
+
             print("Antes do Swapper - Memória Principal:")
             print(f"Tamanho da Memória Principal: {self.principal.tamanho}")
-            print(f"Espaço Alocado: {len(self.principal.memoria) + self.principal.qtdtabelas * 256}")
+            print(f"Espaço Alocado: {len(self.principal.memoria) + self.principal.qtd_quadros * 256}")
 
             # Chama o Swapper para liberar espaço na memória principal
-            swapper = Swapper()  # ou crie uma instância do Swapper de acordo com sua implementação
+            # Após adicionar o processo à memória principal
+            swapper = Swapper()
             swapper.move_processo(processo, self.principal, self.secundaria)
 
+            # Atualiza o estado do processo após o Swapper
+            if processo.estado == "Pronto":
+                processo.atualiza_estado("Pronto/Suspenso")
+            elif processo.estado == "Bloqueado":
+                processo.atualiza_estado("Bloqueado/Suspenso")
 
-        # Agora, tenta adicionar o processo à memória principal novamente
-        if len(self.principal.memoria) + self.principal.qtdtabelas * 256 < self.principal.tamanho:
-            self.principal.adiciona_processo(processo)
-        else:
-            print("Memória Insuficiente -- Memória Principal cheia")
+            # Tenta adicionar o processo à memória principal novamente
+            if self.principal.tem_espaco_suficiente(processo):
+                self.principal.adiciona_processo(processo , self.secundaria)
+                processo.atualiza_estado("Pronto")
+                print(f"Processo {numero_processo} criado com sucesso após Swapper.")
+            else:
+                print("Memória Insuficiente -- Memória Principal cheia mesmo após Swapper.")
 
-        # Agora, verifica se a memória principal está vazia antes de tentar acessar o primeiro elemento
-        if len(self.principal.memoria) > 0:
-            print(self.principal.memoria[0].imagem.tamanho)
-        else:
-            print("Memória principal vazia")
+        # Exibe o estado da memória principal após a tentativa de adição do processo
+        self.mostra_situacao_memoria()
 
-    def swapper(self, novo_processo):
-        # Adicione aqui a lógica do Swapper para liberar espaço na memória principal
-        # Você precisa chamar move_processo do Swapper e passar os parâmetros necessários
-        Swapper.move_processo(novo_processo, self.principal, self.secundaria)
+    # Dentro da classe GerenciadorMemoria, método que conclui um processo
+    def conclui_processo(self, processo):
+        # Remove o processo da fila de executando
+        self.fila_executando.remove(processo)
+
+        # Adiciona o processo à fila de terminados
+        self.fila_terminados.append(processo)
+
+
+        # Dentro da classe GerenciadorMemoria, método que bloqueia ou suspende um processo
+    def bloqueia_ou_suspende_processo(self, processo):
+        # Remove o processo da fila de executando
+        self.fila_executando.remove(processo)
+
+        # Adiciona o processo à fila de bloqueados/suspenso
+        self.fila_bloqueados_suspenso.append(processo)
+
+
+    def move_para_executando(self, processo):
+        # Remove o processo da fila de prontos/suspenso
+        self.fila_prontos_suspenso.remove(processo)
+
+        # Adiciona o processo à fila de executando
+        self.fila_executando.append(processo)
 
     def termina_processo(self, numero_processo):
-        processo = self.principal.encontra_processo(numero_processo)
+        processo = self.principal.encontra_processo(numero_processo, set())
+
         if processo:
-            self.principal.remove_processo(processo)
+            self.principal.remover_processo(processo)
+            self.secundaria.remove_processo(processo)
             print(f"Processo {numero_processo} terminado.")
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
     def executa_instrucao(self, numero_processo, endereco_logico):
-        processo = self.principal.encontra_processo(numero_processo)
+        processo = self.principal.encontra_processo(numero_processo, set())
+
         if processo:
             processo.imagem.PC = endereco_logico
             processo.imagem.IR = endereco_logico
@@ -92,23 +194,23 @@ class GerenciadorMemoria:
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
-
-
     def executa_io(self, numero_processo, dispositivo):
         print(f"Processo {numero_processo} executando operação de I/O no dispositivo {dispositivo}.")
 
     def realiza_leitura(self, numero_processo, endereco_logico):
-        processo = self.principal.encontra_processo(numero_processo)
+        processo = self.principal.encontra_processo(numero_processo, set())
+
         if processo:
-            processo.paginas.realiza_leitura(endereco_logico)
+            self.realiza_leitura(numero_processo, endereco_logico)
             print(f"Realizando leitura para o processo {numero_processo} no endereço {endereco_logico}.")
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
     def realiza_escrita(self, numero_processo, endereco_logico, valor):
-        processo = self.principal.encontra_processo(numero_processo)
+        processo = self.principal.encontra_processo(numero_processo, set())
+
         if processo:
-            processo.paginas.realiza_escrita(endereco_logico, valor)
+            self.realiza_escrita(endereco_logico, valor)
             print(f"Realizando escrita para o processo {numero_processo} no endereço {endereco_logico} com valor {valor}.")
         else:
             print(f"Processo {numero_processo} não encontrado.")
@@ -116,3 +218,9 @@ class GerenciadorMemoria:
 # Exemplo de uso
 gerenciador = GerenciadorMemoria(tamanho_mp=1024, tamanho_ms=4096, tamanho_pagina=256, tamanho_endereco=12)
 gerenciador.executa_comandos('entrada.txt')
+
+# Mostra o estado da memória principal ao final da simulação
+gerenciador.principal.mostra_memoria_principal()
+
+# Mostra o estado da memória secundária ao final da simulação
+gerenciador.secundaria.mostra_memoria_secundaria()

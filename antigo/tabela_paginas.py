@@ -1,4 +1,5 @@
 from entrada_tabela_paginas import Entrada_TP
+from swapper import Swapper
 
 class TabelaPagina:
 
@@ -74,4 +75,7 @@ class TabelaPagina:
         # Implemente a lógica para mover a página da MS para a MP
         # usando o swapper ou a lógica desejada na sua implementação.
         # Você pode chamar o swapper aqui ou implementar a lógica diretamente.
-        pass
+        if num_quadro not in self.principal:
+            swapper = Swapper()
+            processo = self.secundaria.encontra_processo_por_quadro(num_quadro)
+            swapper.move_processo(processo, self.principal, self.secundaria)
