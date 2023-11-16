@@ -1,4 +1,4 @@
-    def termina_processo(self, numero_processo):
+def termina_processo(self, numero_processo):
         processo = self.principal.encontra_processo(numero_processo)
         if processo:
             self.principal.remover_processo(processo)
@@ -7,7 +7,7 @@
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
-    def executa_instrucao(self, numero_processo, endereco_logico):
+def executa_instrucao(self, numero_processo, endereco_logico):
         processo = self.principal.encontra_processo(numero_processo)
         if processo:
             processo.imagem.PC = endereco_logico
@@ -16,10 +16,10 @@
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
-    def executa_io(self, numero_processo, dispositivo):
+def executa_io(self, numero_processo, dispositivo):
         print(f"Processo {numero_processo} executando operação de I/O no dispositivo {dispositivo}.")
 
-    def realiza_leitura(self, numero_processo, endereco_logico):
+def realiza_leitura(self, numero_processo, endereco_logico):
         processo = self.principal.encontra_processo(numero_processo)
         if processo:
             processo.tabela_paginas.realiza_leitura(endereco_logico)
@@ -27,7 +27,7 @@
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
-    def realiza_escrita(self, numero_processo, endereco_logico, valor):
+def realiza_escrita(self, numero_processo, endereco_logico, valor):
         processo = self.principal.encontra_processo(numero_processo)
         if processo:
             processo.tabela_paginas.realiza_escrita(endereco_logico, valor)
