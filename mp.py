@@ -36,6 +36,8 @@ class MemoriaPrincipal:
         print(f"Antes da adição - Processo: {processo}, Páginas Necessárias: {qtd_paginas_necessarias}")
 
         if self.tem_espaco_suficiente(processo):
+           # self.memoria[processo.imagem.id_processo] = processo
+            self.memoria.append(processo)
             # Aloca páginas do processo na memória principal
             tabela_paginas = TabelaPagina(self.tamanho_pagina, self, memoria_secundaria)
                         # Inicializa a tabela de páginas
@@ -70,21 +72,12 @@ class MemoriaPrincipal:
     
 # Dentro da classe GerenciadorMemoriaPrincipal
     def encontra_processo(self, numero_processo, processos_verificados=set()):
-        for quadro in self.memoria:
-            if quadro and quadro.imagem and quadro.imagem.id_processo == numero_processo:
-                return quadro.imagem
-            elif quadro and quadro.tabela_paginas and quadro.tabela_paginas.entradas:
-                for entrada in quadro.tabela_paginas.entradas:
-                    if entrada.p == 1 and entrada.numquadro not in processos_verificados:
-                        processos_verificados.add(entrada.numquadro)
-                        processo = self.encontra_processo(numero_processo, processos_verificados)
-                        if processo:
-                            return processo
+        for processo in self.memoria:
+            if processo and processo.imagem and processo.imagem.id_processo == numero_processo:
+                return processo
         return None
 
 
-
-    
 
 
 

@@ -18,6 +18,7 @@ class TabelaPagina:
     def encontra_quadro_livre(self):
         for i, entrada in enumerate(self.entradas):
             if entrada.p == 0:
+                entrada.p = 1
                 return i
         return None
 

@@ -2,7 +2,7 @@
 
 class Entrada_TP:
     def __init__(self, numquadro, tamanho_pagina):
-        self.p = 1
+        self.p = 0
         self.m = 0
         self.numquadro = numquadro
         self.timer = 0

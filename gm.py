@@ -29,20 +29,14 @@ class GerenciadorMemoria:
             if processo:
                 print(f'\nTabela de Páginas do Processo {processo.imagem.id_processo}:')
                 print('-----------------------------')
-                print('Índice | Página | Quadro')
+                print('Índice | Quadro')
                 
                 # Itera sobre as entradas da tabela de páginas
-                for entrada in processo.tabela_paginas.entradas:
-                    print(f'  {entrada.indice}\t|\t{entrada.pagina}\t|\t{entrada.quadro}')
-
-                print(f'\nConteúdo dos Quadros do Processo {processo.imagem.id_processo}:')
-                print('-----------------------------')
-                for i, quadro in enumerate(processo.tabela_paginas.entradas):
-                    if quadro:
-                        print(f'Quadro {i} - Conteúdo: {quadro.conteudo}')
-                    else:
-                        print(f'Quadro {i} - Vazio')
-
+                indice = 0
+                for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo].entradas:
+                    print(f'  {indice}\t|\t{entrada.numquadro}')
+                    indice += 1
+                print("\n")
 
 
     def executa_comandos(self, arquivo):
@@ -199,9 +193,8 @@ class GerenciadorMemoria:
 
     def realiza_leitura(self, numero_processo, endereco_logico):
         processo = self.principal.encontra_processo(numero_processo, set())
-
         if processo:
-            self.realiza_leitura(numero_processo, endereco_logico)
+       #     self.realiza_leitura(numero_processo, endereco_logico)
             print(f"Realizando leitura para o processo {numero_processo} no endereço {endereco_logico}.")
         else:
             print(f"Processo {numero_processo} não encontrado.")
@@ -210,13 +203,12 @@ class GerenciadorMemoria:
         processo = self.principal.encontra_processo(numero_processo, set())
 
         if processo:
-            self.realiza_escrita(endereco_logico, valor)
             print(f"Realizando escrita para o processo {numero_processo} no endereço {endereco_logico} com valor {valor}.")
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
 # Exemplo de uso
-gerenciador = GerenciadorMemoria(tamanho_mp=1024, tamanho_ms=4096, tamanho_pagina=256, tamanho_endereco=12)
+gerenciador = GerenciadorMemoria(tamanho_mp=4096, tamanho_ms=16384, tamanho_pagina=256, tamanho_endereco=12)
 gerenciador.executa_comandos('entrada.txt')
 
 # Mostra o estado da memória principal ao final da simulação
