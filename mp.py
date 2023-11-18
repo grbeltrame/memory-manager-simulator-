@@ -33,7 +33,7 @@ class MemoriaPrincipal:
         qtd_quadros_necessarios = processo.tamanho // self.tamanho_pagina
         qtd_paginas_necessarias = (qtd_quadros_necessarios + self.qtd_quadros - 1) // self.qtd_quadros
 
-        print(f"Antes da adição - Processo: {processo}, Páginas Necessárias: {qtd_paginas_necessarias}")
+        print(f"Antes da adição - Processo: {str(processo)}, Páginas Necessárias: {qtd_paginas_necessarias}")
 
         if self.tem_espaco_suficiente(processo):
            # self.memoria[processo.imagem.id_processo] = processo
@@ -43,7 +43,7 @@ class MemoriaPrincipal:
                         # Inicializa a tabela de páginas
             tabela_paginas.inicializa_tabela(qtd_paginas_necessarias)
 
-            print(f"Tabela de Páginas criada: {tabela_paginas}")
+            print(f"Tabela de Páginas criada.")
             self.tabelas_paginas[processo.imagem.id_processo] = tabela_paginas
             
             for i in range(qtd_paginas_necessarias):

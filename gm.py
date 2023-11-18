@@ -64,6 +64,7 @@ class GerenciadorMemoria:
                 elif partes[1] == 'T':
                     self.termina_processo(numero_processo)
                 elif partes[1] == 'P':
+                    print(partes)
                     endereco_binario = partes[2].lstrip('(').rstrip(')2')               
                     # Verifica se o endereço_binario não está vazio
                     if endereco_binario:
