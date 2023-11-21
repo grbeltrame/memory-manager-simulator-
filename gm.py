@@ -23,7 +23,8 @@ class GerenciadorMemoria:
         print('\nSITUAÇÃO DA MEMÓRIA PRINCIPAL')
         print('-----------------------------')
         print(f'Tamanho da MP: {self.principal.tamanho}')
-        print(f'Espaço Alocado: {len(self.principal.memoria)} quadros')
+        print(f'Espaço Total: {self.principal.qtd_quadros} quadros')
+        print(f'Espaço Alocáveis: {self.principal.quadros_disponiveis} quadros')
 
         for processo in self.principal.memoria:
             if processo:
@@ -33,7 +34,7 @@ class GerenciadorMemoria:
                 
                 # Itera sobre as entradas da tabela de páginas
                 indice = 0
-                for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo].entradas:
+                for entrada in self.principal.quadros[processo.imagem.id_processo].entradas:
                     print(f'  {indice}\t|\t{entrada.numquadro}')
                     indice += 1
                 print("\n")
