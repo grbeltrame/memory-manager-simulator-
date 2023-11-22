@@ -88,6 +88,8 @@ class MemoriaPrincipal:
                 for i in range(len(self.tabelas_paginas[processo.imagem.id_processo])):
                     print(f'{indice} |\t {self.tabelas_paginas[processo.imagem.id_processo][i]}')
                     indice += 1
+                if(self.tabelas_paginas[processo.imagem.id_processo] == []):
+                    print('Nenhuma Página Foi Usada ')
                 print('\n')
 
 

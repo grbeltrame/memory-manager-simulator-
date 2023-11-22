@@ -204,6 +204,8 @@ class GerenciadorMemoria:
     def realiza_leitura(self, numero_processo, endereco_logico):
         processo = self.principal.encontra_processo(numero_processo, set())
         if processo:
+            processo.imagem.PC = endereco_logico
+            processo.imagem.IR = endereco_logico
        #     self.realiza_leitura(numero_processo, endereco_logico)
             print(f"Realizando leitura para o processo {numero_processo} no endereço lógico {endereco_logico}.")
             if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
@@ -215,6 +217,8 @@ class GerenciadorMemoria:
         processo = self.principal.encontra_processo(numero_processo, set())
 
         if processo:
+            processo.imagem.PC = endereco_logico
+            processo.imagem.IR = endereco_logico
             print(f"Realizando escrita para o processo {numero_processo} no endereço lógico {endereco_logico} com valor {valor}.")
             if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
                 self.principal.tabelas_paginas[processo.imagem.id_processo].append(math.floor(endereco_logico/255))

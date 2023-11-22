@@ -11,4 +11,5 @@ class Processo:
     def atualiza_estado(self, novo_estado):
         print(f"Processo {self.imagem.id_processo} está transitando do estado {self.estado} para {novo_estado}.")
         self.estado = novo_estado
+        self.imagem.estado = novo_estado
 
