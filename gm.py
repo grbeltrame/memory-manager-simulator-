@@ -1,5 +1,5 @@
 # gerenciador_memoria.py
-
+import math
 from mp import MemoriaPrincipal
 from ms import MemoriaSecundaria
 from processo import Processo
@@ -24,19 +24,19 @@ class GerenciadorMemoria:
         print('-----------------------------')
         print(f'Tamanho da MP: {self.principal.tamanho}')
         print(f'Espaço Total: {self.principal.qtd_quadros} quadros')
-        print(f'Espaço Alocáveis: {self.principal.quadros_disponiveis} quadros')
+        print(f'Espaço Alocável: {self.principal.quadros_disponiveis} quadros  /  {self.principal.quadros_disponiveis * 256} bytes')
 
         for processo in self.principal.memoria:
             if processo:
-                print(f'\nTabela de Páginas do Processo {processo.imagem.id_processo}:')
+                print(f'\nQuadros na MP do Processo {processo.imagem.id_processo}:')
                 print('-----------------------------')
-                print('Índice | Quadro')
+                print('Página  |    Quadro')
                 
                 # Itera sobre as entradas da tabela de páginas
-                indice = 0
+                pagina = 0
                 for entrada in self.principal.quadros[processo.imagem.id_processo].entradas:
-                    print(f'  {indice}\t|\t{entrada.numquadro}')
-                    indice += 1
+                    print(f'  {pagina}\t|\t{entrada.numquadro}')
+                    pagina += 1
                 print("\n")
 
 
@@ -54,13 +54,11 @@ class GerenciadorMemoria:
 
                 if partes[1] == 'C':
                     # Verifica se há informações suficientes para processos de criação (com 4 partes)
-                    if len(partes) < 4:
+                    if len(partes) < 3:
                         print("Formato de comando inválido na linha:", linha)
                         continue  # Pular para a próxima iteração do loop
 
                     tamanho_processo_str = partes[2]
-                    # Remove o 'MB' do final da string
-                    tamanho_processo_str = tamanho_processo_str.rstrip('MB')
                     self.cria_processo(numero_processo, tamanho_processo_str)
                 elif partes[1] == 'T':
                     self.termina_processo(numero_processo)
@@ -193,7 +191,10 @@ class GerenciadorMemoria:
         if processo:
             processo.imagem.PC = endereco_logico
             processo.imagem.IR = endereco_logico
-            print(f"Executando instrução para o processo {numero_processo}.")
+            if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(math.floor(endereco_logico/255))
+            print(f"Executando instrução do endereço lógico {endereco_logico} para o processo {numero_processo}.")
+            gerenciador.principal.mostra_tabelas_paginas()
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
@@ -204,7 +205,9 @@ class GerenciadorMemoria:
         processo = self.principal.encontra_processo(numero_processo, set())
         if processo:
        #     self.realiza_leitura(numero_processo, endereco_logico)
-            print(f"Realizando leitura para o processo {numero_processo} no endereço {endereco_logico}.")
+            print(f"Realizando leitura para o processo {numero_processo} no endereço lógico {endereco_logico}.")
+            if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(math.floor(endereco_logico/255))
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
@@ -212,16 +215,22 @@ class GerenciadorMemoria:
         processo = self.principal.encontra_processo(numero_processo, set())
 
         if processo:
-            print(f"Realizando escrita para o processo {numero_processo} no endereço {endereco_logico} com valor {valor}.")
+            print(f"Realizando escrita para o processo {numero_processo} no endereço lógico {endereco_logico} com valor {valor}.")
+            if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(math.floor(endereco_logico/255))
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
+
+
 # Exemplo de uso
-gerenciador = GerenciadorMemoria(tamanho_mp=4096, tamanho_ms=16384, tamanho_pagina=256, tamanho_endereco=12)
+gerenciador = GerenciadorMemoria(tamanho_mp=4194304, tamanho_ms=33554432, tamanho_pagina=256, tamanho_endereco=12)
 gerenciador.executa_comandos('entrada.txt')
 
+gerenciador.principal.mostra_tabelas_paginas()
+
 # Mostra o estado da memória principal ao final da simulação
-gerenciador.principal.mostra_memoria_principal()
+#gerenciador.principal.mostra_memoria_principal()
 
 # Mostra o estado da memória secundária ao final da simulação
 gerenciador.secundaria.mostra_memoria_secundaria()

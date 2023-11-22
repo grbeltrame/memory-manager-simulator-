@@ -26,8 +26,6 @@ class MemoriaPrincipal:
         else:
             paginas_alocadas = 0
 
-        print(f"Páginas alocadas: {paginas_alocadas}, Páginas necessárias: {qtd_paginas_necessarias}")
-
         return paginas_alocadas + qtd_paginas_necessarias <= self.qtd_quadros
 
 
@@ -35,7 +33,7 @@ class MemoriaPrincipal:
         qtd_quadros_necessarios = round(processo.tamanho / self.tamanho_pagina)
         qtd_paginas_necessarias = qtd_quadros_necessarios
 
-        print(f"Antes da adição - Processo: {str(processo)}, Páginas Necessárias: {qtd_paginas_necessarias}")
+        print(f"Páginas Necessárias: {qtd_paginas_necessarias}")
 
         if self.tem_espaco_suficiente(processo):
            # self.memoria[processo.imagem.id_processo] = processo
@@ -49,20 +47,18 @@ class MemoriaPrincipal:
             self.quadros[processo.imagem.id_processo] = tabela_paginas
             
             for i in range(qtd_paginas_necessarias):
-                print(qtd_paginas_necessarias)
-                print(f"loop {i}")
                 num_quadro_livre = tabela_paginas.encontra_quadro_livre()
                 if num_quadro_livre is not None:
                     entrada = tabela_paginas.entradas[num_quadro_livre]
-                    entrada.p = 1
-                    entrada.m = 0
-                    entrada.numquadro = num_quadro_livre
-                    entrada.timer = 0
+                    entrada.numquadro = self.quadro_atual
+                    self.quadro_atual += 1
                     print(f"Página {i} do processo {processo.imagem.id_processo} alocada no Quadro {self.quadro_atual}")
                 else:
                     print("Não há quadros livres na MP.")
             
             self.quadros[processo.imagem.id_processo] = tabela_paginas
+
+            self.tabelas_paginas[processo.imagem.id_processo] = []
         else:
             print(f"Memória Insuficiente -- Memória Principal cheia para o processo {processo.imagem.id_processo}.")
 
@@ -82,6 +78,17 @@ class MemoriaPrincipal:
         return None
 
 
+    def mostra_tabelas_paginas(self):
+        for processo in self.memoria:
+            if processo:
+                print(f'\nTabela de Páginas dos Processo {processo.imagem.id_processo}')
+                print('-----------------------------')
+                print('Índice | Quadro')
+                indice = 0
+                for i in range(len(self.tabelas_paginas[processo.imagem.id_processo])):
+                    print(f'{indice} |\t {self.tabelas_paginas[processo.imagem.id_processo][i]}')
+                    indice += 1
+                print('\n')
 
 
 
