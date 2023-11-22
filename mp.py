@@ -12,6 +12,7 @@ class MemoriaPrincipal:
         self.tabelas_paginas = {} # Dicionário para armazenar as tabelas de páginas de cada processo
         self.quadros_disponiveis = self.qtd_quadros
         self.quadro_atual = 0
+        self.tamanho_tabela_paginas = 16
 
 
     # Dentro da classe MemoriaPrincipal

@@ -96,10 +96,11 @@ class GerenciadorMemoria:
                     self.realiza_escrita(numero_processo, endereco_logico, valor)
 
             # Mostra a situação da memória após a execução dos comandos
-            self.mostra_situacao_memoria()
+     #       self.mostra_situacao_memoria()
 
     def cria_processo(self, numero_processo, tamanho_processo_str):
-        self.mostra_situacao_memoria()
+        print('\n')
+       # self.mostra_situacao_memoria()
 
         # Converte o valor do tamanho do processo para inteiro
         tamanho_processo = int(tamanho_processo_str)
@@ -123,7 +124,7 @@ class GerenciadorMemoria:
             print(f"Memória Insuficiente -- Memória Principal cheia para o processo {numero_processo}.")
 
             # Exibe o estado da memória principal após a tentativa de criação do processo
-            self.mostra_situacao_memoria()
+#            self.mostra_situacao_memoria()
 
             print("Antes do Swapper - Memória Principal:")
             print(f"Tamanho da Memória Principal: {self.principal.tamanho}")
@@ -194,23 +195,31 @@ class GerenciadorMemoria:
             processo.imagem.PC = endereco_logico
             processo.imagem.IR = endereco_logico
             quadro_dentro = 0
+            
+            print(f"Executando instrução do endereço lógico {endereco_logico} para o processo {numero_processo}.")
 
             if self.principal.tabelas_paginas[processo.imagem.id_processo] == []:
                 entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
                 entrada.p = 1
                 self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                print(f"Página {math.floor(endereco_logico/255)} entrou na TP de {numero_processo}")
+            else:
 
-            for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
-                if math.floor(endereco_logico/255) == entrada.numquadro:
-                    quadro_dentro = 1
+                for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                    if math.floor(endereco_logico/255) == entrada.numquadro:
+                        quadro_dentro = 1
 
-            if quadro_dentro == 0:
-                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
-                entrada.p = 1
-                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                if quadro_dentro == 0 and len(self.principal.tabelas_paginas[processo.imagem.id_processo]) < self.principal.tamanho_tabela_paginas:
+                    entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                    entrada.p = 1
+                    self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                    print(f"Página {math.floor(endereco_logico/255)} entrou na TP de {numero_processo}")
+                elif quadro_dentro == 1:
+                    print(f"Página {math.floor(endereco_logico/255)} já está dentro da TP")
+                else:
+                    print("Tabela de Páginas Cheia")
 
-            print(f"Executando instrução do endereço lógico {endereco_logico} para o processo {numero_processo}.")
-            gerenciador.principal.mostra_tabelas_paginas()
+     #       gerenciador.principal.mostra_tabelas_paginas()
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
@@ -233,15 +242,22 @@ class GerenciadorMemoria:
                 entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
                 entrada.p = 1
                 self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                print(f"Página {math.floor(endereco_logico/255)} entrou na TP de {numero_processo}")
+            else:
                 
-            for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
-                if math.floor(endereco_logico/255) == entrada.numquadro:
-                    quadro_dentro = 1
+                for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                    if math.floor(endereco_logico/255) == entrada.numquadro:
+                        quadro_dentro = 1
 
-            if quadro_dentro == 0:
-                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
-                entrada.p = 1
-                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                if quadro_dentro == 0 and len(self.principal.tabelas_paginas[processo.imagem.id_processo]) < self.principal.tamanho_tabela_paginas:
+                    entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                    entrada.p = 1
+                    self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                    print(f"Página {math.floor(endereco_logico/255)} entrou na TP de {numero_processo}")
+                elif quadro_dentro == 1:
+                    print(f"Página {math.floor(endereco_logico/255)} já está dentro da TP")
+                else:
+                    print("Tabela de Páginas Cheia")
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
@@ -257,16 +273,25 @@ class GerenciadorMemoria:
             if self.principal.tabelas_paginas[processo.imagem.id_processo] == []:
                 entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
                 entrada.p = 1
+                entrada.m = 1
                 self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
-                
-            for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
-                if math.floor(endereco_logico/255) == entrada.numquadro:
-                    quadro_dentro = 1
+                print(f"Página {math.floor(endereco_logico/255)} entrou na TP de {numero_processo}")
+            else:
+                for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                    if math.floor(endereco_logico/255) == entrada.numquadro:
+                        quadro_dentro = 1
 
-            if quadro_dentro == 0:
-                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
-                entrada.p = 1
-                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                if quadro_dentro == 0 and len(self.principal.tabelas_paginas[processo.imagem.id_processo]) < self.principal.tamanho_tabela_paginas:
+                    entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                    entrada.p = 1
+                    entrada.m = 1
+                    self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                    print(f"Página {math.floor(endereco_logico/255)} entrou na TP de {numero_processo}")
+                elif quadro_dentro == 1:
+                    print(f"Página {math.floor(endereco_logico/255)} já está dentro da TP")
+                else:
+                    print("Tabela de Páginas Cheia")
+
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
@@ -274,6 +299,9 @@ class GerenciadorMemoria:
 
 # Exemplo de uso
 gerenciador = GerenciadorMemoria(tamanho_mp=4194304, tamanho_ms=33554432, tamanho_pagina=256, tamanho_endereco=12)
+
+gerenciador.mostra_situacao_memoria()
+
 gerenciador.executa_comandos('entrada.txt')
 
 gerenciador.principal.mostra_tabelas_paginas()
