@@ -188,6 +188,7 @@ class GerenciadorMemoria:
 
     def executa_instrucao(self, numero_processo, endereco_logico):
         processo = self.principal.encontra_processo(numero_processo, set())
+        processo.atualiza_estado("Executando")
 
         if processo:
             processo.imagem.PC = endereco_logico
@@ -214,7 +215,10 @@ class GerenciadorMemoria:
             print(f"Processo {numero_processo} não encontrado.")
 
     def executa_io(self, numero_processo, dispositivo):
+        processo = self.principal.encontra_processo(numero_processo, set())
         print(f"Processo {numero_processo} executando operação de I/O no dispositivo {dispositivo}.")
+        processo.atualiza_estado("Bloquado")
+        print(f"Processo {numero_processo} bloqueado por operação de I/O no dispositivo {dispositivo}.")
 
     def realiza_leitura(self, numero_processo, endereco_logico):
         processo = self.principal.encontra_processo(numero_processo, set())
