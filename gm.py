@@ -5,6 +5,7 @@ from ms import MemoriaSecundaria
 from processo import Processo
 from imagem import Imagem
 from swapper import Swapper
+from entrada import *
 
 class GerenciadorMemoria:
     def __init__(self, tamanho_mp, tamanho_ms, tamanho_pagina, tamanho_endereco):
@@ -191,8 +192,22 @@ class GerenciadorMemoria:
         if processo:
             processo.imagem.PC = endereco_logico
             processo.imagem.IR = endereco_logico
-            if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
-                self.principal.tabelas_paginas[processo.imagem.id_processo].append(math.floor(endereco_logico/255))
+            quadro_dentro = 0
+
+            if self.principal.tabelas_paginas[processo.imagem.id_processo] == []:
+                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                entrada.p = 1
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+
+            for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                if math.floor(endereco_logico/255) == entrada.numquadro:
+                    quadro_dentro = 1
+
+            if quadro_dentro == 0:
+                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                entrada.p = 1
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+
             print(f"Executando instrução do endereço lógico {endereco_logico} para o processo {numero_processo}.")
             gerenciador.principal.mostra_tabelas_paginas()
         else:
@@ -208,8 +223,21 @@ class GerenciadorMemoria:
             processo.imagem.IR = endereco_logico
        #     self.realiza_leitura(numero_processo, endereco_logico)
             print(f"Realizando leitura para o processo {numero_processo} no endereço lógico {endereco_logico}.")
-            if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
-                self.principal.tabelas_paginas[processo.imagem.id_processo].append(math.floor(endereco_logico/255))
+            quadro_dentro = 0
+
+            if self.principal.tabelas_paginas[processo.imagem.id_processo] == []:
+                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                entrada.p = 1
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                
+            for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                if math.floor(endereco_logico/255) == entrada.numquadro:
+                    quadro_dentro = 1
+
+            if quadro_dentro == 0:
+                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                entrada.p = 1
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
@@ -220,8 +248,21 @@ class GerenciadorMemoria:
             processo.imagem.PC = endereco_logico
             processo.imagem.IR = endereco_logico
             print(f"Realizando escrita para o processo {numero_processo} no endereço lógico {endereco_logico} com valor {valor}.")
-            if math.floor(endereco_logico/255) not in self.principal.tabelas_paginas[processo.imagem.id_processo]:
-                self.principal.tabelas_paginas[processo.imagem.id_processo].append(math.floor(endereco_logico/255))
+            quadro_dentro = 0
+
+            if self.principal.tabelas_paginas[processo.imagem.id_processo] == []:
+                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                entrada.p = 1
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
+                
+            for entrada in self.principal.tabelas_paginas[processo.imagem.id_processo]:
+                if math.floor(endereco_logico/255) == entrada.numquadro:
+                    quadro_dentro = 1
+
+            if quadro_dentro == 0:
+                entrada = Entrada_TP(math.floor(endereco_logico/255), 256)
+                entrada.p = 1
+                self.principal.tabelas_paginas[processo.imagem.id_processo].append(entrada)
         else:
             print(f"Processo {numero_processo} não encontrado.")
 

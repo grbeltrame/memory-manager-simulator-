@@ -83,10 +83,10 @@ class MemoriaPrincipal:
             if processo:
                 print(f'\nTabela de Páginas dos Processo {processo.imagem.id_processo}')
                 print('-----------------------------')
-                print('Índice | Quadro')
+                print('Índice | Presença | Modificado | Quadro')
                 indice = 0
                 for i in range(len(self.tabelas_paginas[processo.imagem.id_processo])):
-                    print(f'{indice} |\t {self.tabelas_paginas[processo.imagem.id_processo][i]}')
+                    print(f'  {indice}    |    {self.tabelas_paginas[processo.imagem.id_processo][i].p}     |     {self.tabelas_paginas[processo.imagem.id_processo][i].m}      |   {self.tabelas_paginas[processo.imagem.id_processo][i].numquadro}')
                     indice += 1
                 if(self.tabelas_paginas[processo.imagem.id_processo] == []):
                     print('Nenhuma Página Foi Usada ')
