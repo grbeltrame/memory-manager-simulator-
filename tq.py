@@ -2,7 +2,8 @@
 
 from entrada import Entrada_TP
 
-class TabelaPagina:
+
+class TabelaQuadro:
     def __init__(self, tamanho_pagina, memoria_principal, memoria_secundaria):
         self.tamanho_pagina = tamanho_pagina
         self.memoria_principal = memoria_principal
@@ -23,7 +24,7 @@ class TabelaPagina:
         return None
 
 
-    def substitui_pagina(self, processo, endereco_logico):
+    def substitui_quadro(self, processo, endereco_logico):
         quadro_livre = self.encontra_quadro_livre()
         if quadro_livre is not None:
             entrada_substituida = self.entradas[quadro_livre]

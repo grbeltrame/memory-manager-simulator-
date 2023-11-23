@@ -1,6 +1,7 @@
 # memoria_principal.py
 import math
-from tp import TabelaPagina
+from swapper import Swapper
+from tq import TabelaQuadro
 
 class MemoriaPrincipal:
     def __init__(self, tamanho, tamanho_pagina):
@@ -10,9 +11,10 @@ class MemoriaPrincipal:
         self.memoria = [None] * self.qtd_quadros  # Inicializa a memória como uma lista de quadros vazios
         self.quadros = {}  # Dicionário para armazenar os quadros de cada processo
         self.tabelas_paginas = {} # Dicionário para armazenar as tabelas de páginas de cada processo
+        self.tamanho_tabela_paginas = 16
         self.quadros_disponiveis = self.qtd_quadros
         self.quadro_atual = 0
-        self.tamanho_tabela_paginas = 16
+        self.bloqueados = []
 
 
     # Dentro da classe MemoriaPrincipal
@@ -20,17 +22,21 @@ class MemoriaPrincipal:
         qtd_quadros_necessarios = round(processo.tamanho / self.tamanho_pagina)
         qtd_paginas_necessarias = qtd_quadros_necessarios
 
-        # Verifica se há páginas suficientes na tabela de páginas
-        tabela_paginas = self.quadros.get(processo.imagem.id_processo)
-        if tabela_paginas is not None:
-            paginas_alocadas = sum(1 for entrada in tabela_paginas.entradas if entrada.p == 1)
+        # Verifica se há páginas suficientes na MP
+        if qtd_paginas_necessarias > self.tamanho/self.tamanho_pagina:
+            return False
+        elif qtd_paginas_necessarias <= self.quadros_disponiveis:
+            return True
         else:
-            paginas_alocadas = 0
-
-        return paginas_alocadas + qtd_paginas_necessarias <= self.qtd_quadros
+            Swapper.move_processo(self)
+            return self.tem_espaco_suficiente(processo)
 
 
     def adiciona_processo(self, processo, memoria_secundaria):
+        for i in self.memoria:
+            if i != None:
+                if(processo.imagem.id_processo) == i.imagem.id_processo:
+                    return False
         qtd_quadros_necessarios = round(processo.tamanho / self.tamanho_pagina)
         qtd_paginas_necessarias = qtd_quadros_necessarios
 
@@ -41,27 +47,34 @@ class MemoriaPrincipal:
             self.memoria.append(processo)
             self.quadros_disponiveis -= qtd_quadros_necessarios
             # Aloca páginas do processo na memória principal
-            tabela_paginas = TabelaPagina(self.tamanho_pagina, self, memoria_secundaria)
+            tabela_quadros = TabelaQuadro(self.tamanho_pagina, self, memoria_secundaria)
                         # Inicializa a tabela de páginas
-            tabela_paginas.inicializa_tabela(qtd_paginas_necessarias)
+            tabela_quadros.inicializa_tabela(qtd_paginas_necessarias)
 
-            self.quadros[processo.imagem.id_processo] = tabela_paginas
-            
+            self.quadros[processo.imagem.id_processo] = tabela_quadros
+
+            quadros = []
+            cheio = 0
             for i in range(qtd_paginas_necessarias):
-                num_quadro_livre = tabela_paginas.encontra_quadro_livre()
+                num_quadro_livre = tabela_quadros.encontra_quadro_livre()
                 if num_quadro_livre is not None:
-                    entrada = tabela_paginas.entradas[num_quadro_livre]
+                    entrada = tabela_quadros.entradas[num_quadro_livre]
                     entrada.numquadro = self.quadro_atual
+                    quadros.append(self.quadro_atual)
                     self.quadro_atual += 1
-                    print(f"Página {i} do processo {processo.imagem.id_processo} alocada no Quadro {self.quadro_atual}")
                 else:
+                    cheio = 1
                     print("Não há quadros livres na MP.")
-            
-            self.quadros[processo.imagem.id_processo] = tabela_paginas
+
+            if cheio == 0:
+                print(f"{qtd_paginas_necessarias} Páginas do processo {processo.imagem.id_processo} alocada nos Quadros {quadros[0]} à {quadros[qtd_paginas_necessarias-1]}")
+
+            self.quadros[processo.imagem.id_processo] = tabela_quadros
 
             self.tabelas_paginas[processo.imagem.id_processo] = []
         else:
             print(f"Memória Insuficiente -- Memória Principal cheia para o processo {processo.imagem.id_processo}.")
+        return True
 
 
 
@@ -69,6 +82,7 @@ class MemoriaPrincipal:
     def remover_processo(self, processo):
         for i in range(len(self.memoria)):
             if self.memoria[i] == processo:
+                self.quadros_disponiveis += round(processo.tamanho/self.tamanho_pagina)
                 self.memoria[i] = None
     
 # Dentro da classe GerenciadorMemoriaPrincipal
@@ -80,6 +94,7 @@ class MemoriaPrincipal:
 
 
     def mostra_tabelas_paginas(self):
+        print("        Tabelas de Páginas        ")
         for processo in self.memoria:
             if processo:
                 print(f'\nTabela de Páginas dos Processo {processo.imagem.id_processo}')
