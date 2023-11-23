@@ -94,7 +94,7 @@ class MemoriaPrincipal:
 
 
     def mostra_tabelas_paginas(self):
-        print("        Tabelas de Páginas        ")
+        print("\n        Tabelas de Páginas        ")
         for processo in self.memoria:
             if processo:
                 print(f'\nTabela de Páginas dos Processo {processo.imagem.id_processo}')

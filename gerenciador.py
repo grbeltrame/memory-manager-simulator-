@@ -19,30 +19,6 @@ class GerenciadorMemoria:
         self.principal = MemoriaPrincipal(tamanho_mp, tamanho_pagina)
         self.secundaria = MemoriaSecundaria(tamanho_ms)
 
-    def mostra_situacao_memoria(self):
-        print('\nSITUAÇÃO DA MEMÓRIA PRINCIPAL')
-        print('-----------------------------')
-        print(f'Tamanho da MP: {self.principal.tamanho}')
-        print(f'Espaço Total: {self.principal.qtd_quadros} quadros')
-        print(f'Espaço Alocável: {self.principal.quadros_disponiveis} quadros  /  {self.principal.quadros_disponiveis * 256} bytes')
-        print("\n        Quadros dos Processos        ")
-        sem_processo = 1
-        for processo in self.principal.memoria:
-            if processo:
-                print(f'\nQuadros na MP do Processo {processo.imagem.id_processo}:')
-                print('-----------------------------')
-                print('Página  |    Quadro')
-                
-                # Itera sobre as entradas da tabela de páginas
-                pagina = 0
-                for entrada in self.principal.quadros[processo.imagem.id_processo].entradas:
-                    print(f'  {pagina}\t|\t{entrada.numquadro}')
-                    pagina += 1
-                print("\n")
-                sem_processo = 0
-        if sem_processo == 1:
-           print("\n    Não há nenhum Processo na MP        ")
-
     def executa_comandos(self, arquivo):
         with open(arquivo, 'r') as f:
             for linha in f:
@@ -172,6 +148,7 @@ class GerenciadorMemoria:
         processo = self.principal.encontra_processo(numero_processo, set())
 
         if processo:
+            gerenciador.principal.mostra_tabelas_paginas()
             self.principal.remover_processo(processo)
             processo.atualiza_estado("Finalizado")
             print(f"Processo {numero_processo} terminado.")
@@ -289,13 +266,35 @@ class GerenciadorMemoria:
         else:
             print(f"Processo {numero_processo} não encontrado.")
 
-
+    def mostra_situacao_memoria(self):
+        print('\nSITUAÇÃO DA MEMÓRIA PRINCIPAL')
+        print('-----------------------------')
+        print(f'Tamanho da MP: {self.principal.tamanho}')
+        print(f'Espaço Total: {self.principal.qtd_quadros} quadros')
+        print(f'Espaço Alocável: {self.principal.quadros_disponiveis} quadros  /  {self.principal.quadros_disponiveis * 256} bytes')
+        print("\n        Quadros dos Processos        ")
+        sem_processo = 1
+        for processo in self.principal.memoria:
+            if processo:
+                print(f'\nQuadros na MP do Processo {processo.imagem.id_processo}:')
+                print('-----------------------------')
+                print('Página  |    Quadro')
+                
+                # Itera sobre as entradas da tabela de páginas
+                pagina = 0
+                for entrada in self.principal.quadros[processo.imagem.id_processo].entradas:
+                    print(f'  {pagina}\t|\t{entrada.numquadro}')
+                    pagina += 1
+                print("\n")
+                sem_processo = 0
+        if sem_processo == 1:
+           print("\n    Não há nenhum Processo na MP        ")
 
 # Exemplo de uso
 # MP de 16 KB, MS de 1 MB, tamanho da página 256 e 12 do endereço
 gerenciador = GerenciadorMemoria(tamanho_mp= 16384 , tamanho_ms= 1048576 , tamanho_pagina=256)
 
-gerenciador.mostra_situacao_memoria()
+gerenciador.principal.mostra_memoria_principal()
 
 gerenciador.executa_comandos('entrada.txt')
 
