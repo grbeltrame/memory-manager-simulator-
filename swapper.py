@@ -12,4 +12,4 @@ class Swapper:
         processo.estado = "Suspenso"
         processo.imagem.estado = "Suspenso"
         principal.remover_processo(processo)
-        print(f"Processo {processo.imagem.id_processo} foi Suspenso (Swapper)")
+        print(f"\nProcesso {processo.imagem.id_processo} foi Suspenso (Swapper [LRU]) por falta de espaço\n")

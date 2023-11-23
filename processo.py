@@ -1,7 +1,5 @@
 # processo.py
 
-from tq import TabelaQuadro
-
 class Processo:
     def __init__(self, imagem, tamanho, principal, secundaria):
         self.imagem = imagem

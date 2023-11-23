@@ -1,7 +1,7 @@
 # memoria_principal.py
 import math
 from swapper import Swapper
-from tq import TabelaQuadro
+from tabelaquadros import TabelaQuadro
 
 class MemoriaPrincipal:
     def __init__(self, tamanho, tamanho_pagina):

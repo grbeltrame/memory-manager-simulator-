@@ -1,9 +1,9 @@
 # gerenciador_memoria.py
 import math
-from mp import MemoriaPrincipal
-from ms import MemoriaSecundaria
+from memoriaprincipal import MemoriaPrincipal
+from memoriasecundaria import MemoriaSecundaria
 from processo import Processo
-from imagem import Imagem
+from imagemprocesso import Imagem
 from swapper import Swapper
 from entrada import *
 
